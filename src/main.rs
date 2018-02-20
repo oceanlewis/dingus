@@ -78,7 +78,7 @@ fn run_app(app: App, mut config_path: PathBuf) {
 fn main() {
     let app = App::new("Dingus")
         .setting(AppSettings::ArgRequiredElseHelp)
-        .version("0.1.0")
+        .version("0.2.0")
         .author("David Lewis <david@inkstonehq.com>")
         .about("Manage your computing environments variables with ease! Inspired by Juan Karam's original Ruby implementation!")
         .subcommand(
@@ -88,14 +88,14 @@ fn main() {
                         .short("c")
                         .long("config")
                         .value_name("FILE")
-                        .help("The Yaml file to be read from that contains the necessary enviroment variables")
+                        .help("The Yaml file to be read from that contains the necessary enviroment variables. The file must live in `~/.config/dingus/` - custom base paths are not supported.")
                         .required(true)
                         .takes_value(true))
                 .arg(Arg::with_name("shell")
                         .short("s")
                         .long("shell")
                         .value_name("SHELL")
-                        .help("The shell program to run after setting environment variables")
+                        .help("Specify the name of your shell environment. The default shell is the Fish shell!")
                         .takes_value(true))
         ).subcommand(
             SubCommand::with_name("session")
@@ -104,14 +104,14 @@ fn main() {
                         .short("c")
                         .long("config")
                         .value_name("FILE")
-                        .help("The Yaml file to be read from that contains the necessary enviroment variables")
+                        .help("The Yaml file to be read from that contains the necessary enviroment variables. The file must live in `~/.config/dingus/` - custom base paths are not supported.")
                         .required(true)
                         .takes_value(true))
                 .arg(Arg::with_name("shell")
                         .short("s")
                         .long("shell")
                         .value_name("SHELL")
-                        .help("The shell Dingus should provide to the User after setting the environment variables")
+                        .help("Specify the shell program you'd like run after your environment is set up. The default shell is the Fish shell!")
                         .takes_value(true)));
 
     let mut default_config_path = PathBuf::new();
