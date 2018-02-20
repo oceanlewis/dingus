@@ -53,35 +53,25 @@ fn load_config_file(path: PathBuf) -> VariableList {
 
 fn run_app(app: App, mut config_path: PathBuf) {
     let invocation = app.get_matches();
+    let (command_name, subcommand_matches) = invocation.subcommand();
+    let subcommand_matches = subcommand_matches.unwrap();
 
-    match invocation.subcommand() {
-        ("print", Some(subcommand_matches)) => {
-            let config_file_name = subcommand_matches.value_of("config").unwrap();
+    let shell_program = subcommand_matches
+        .value_of("shell")
+        .unwrap_or("fish")
+        .to_string();
 
-            let shell_program = subcommand_matches
-                .value_of("shell")
-                .unwrap_or("fish")
-                .to_string();
+    config_path.push(subcommand_matches.value_of("config").unwrap());
+    let variable_list = load_config_file(config_path);
 
-            config_path.push(config_file_name);
-            let variable_list = load_config_file(config_path);
-
+    match command_name {
+        "print" => {
             print(shell_program, variable_list);
         }
-        ("session", Some(subcommand_matches)) => {
-            let config_file_name = subcommand_matches.value_of("config").unwrap();
-
-            let shell_program = subcommand_matches
-                .value_of("shell")
-                .unwrap_or("fish")
-                .to_string();
-
-            config_path.push(config_file_name);
-            let variable_list = load_config_file(config_path);
-
+        "session" => {
             session(shell_program, variable_list);
         }
-        _ => {}
+        _ => panic!("Bad command_name passed into run_app()"),
     }
 }
 
