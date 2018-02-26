@@ -56,9 +56,10 @@ fn run_app(app: App, mut config_path: PathBuf) {
     let (command_name, subcommand_matches) = invocation.subcommand();
     let subcommand_matches = subcommand_matches.unwrap();
 
+    let current_shell = std::env::var("SHELL").expect("Dingus needs to be run interactively");
     let shell_program = subcommand_matches
         .value_of("shell")
-        .unwrap_or("fish")
+        .unwrap_or(&current_shell)
         .to_string();
 
     config_path.push(subcommand_matches.value_of("config").unwrap());
@@ -76,43 +77,77 @@ fn run_app(app: App, mut config_path: PathBuf) {
 }
 
 fn main() {
+    let long_about = r#"
+Manage your computing environments variables with ease!
+
+By default `dingus` will believe your current shell is whatever program your
+$SHELL evironment variable is set to. I would not recommend changing this,
+instead you can tell `dingus` to use a different shell by supplying a
+`--shell SHELL` argument.
+
+Inspired by Juan Karam's original Ruby implementation!"#;
+
+    let config_argument_help = r#"The Yaml file to be read from that contains the necessary
+enviroment variables. The file must live in `~/.config/dingus/`.
+
+Custom base paths are currently not supported."#;
+
     let app = App::new("Dingus")
         .setting(AppSettings::ArgRequiredElseHelp)
-        .version("0.2.0")
+        .version("0.3.0")
         .author("David Lewis <david@inkstonehq.com>")
-        .about("Manage your computing environments variables with ease! Inspired by Juan Karam's original Ruby implementation!")
+        .long_about(long_about)
         .subcommand(
             SubCommand::with_name("print")
-                .about("Print out a shell command you can run to apply variables directly to your current session.")
-                .arg(Arg::with_name("config")
+                .about(
+                    r#"Print out a shell command you can run to apply variables directly
+to your current session."#,
+                )
+                .arg(
+                    Arg::with_name("config")
                         .short("c")
                         .long("config")
                         .value_name("FILE")
-                        .help("The Yaml file to be read from that contains the necessary enviroment variables. The file must live in `~/.config/dingus/` - custom base paths are not supported.")
+                        .help(&config_argument_help)
                         .required(true)
-                        .takes_value(true))
-                .arg(Arg::with_name("shell")
+                        .takes_value(true),
+                )
+                .arg(
+                    Arg::with_name("shell")
                         .short("s")
                         .long("shell")
                         .value_name("SHELL")
-                        .help("Specify the name of your shell environment. The default shell is the Fish shell!")
-                        .takes_value(true))
-        ).subcommand(
+                        .help("Specify the name of your shell environment.")
+                        .takes_value(true),
+                ),
+        )
+        .subcommand(
             SubCommand::with_name("session")
-                .about("Open a new shell with environment variables applied. Changes made to that session will not affect the parent session.")
-                .arg(Arg::with_name("config")
+                .about(
+                    r#"Open a new shell with environment variables applied. Changes made to
+that session will not affect the parent session."#,
+                )
+                .arg(
+                    Arg::with_name("config")
                         .short("c")
                         .long("config")
                         .value_name("FILE")
-                        .help("The Yaml file to be read from that contains the necessary enviroment variables. The file must live in `~/.config/dingus/` - custom base paths are not supported.")
+                        .help(&config_argument_help)
                         .required(true)
-                        .takes_value(true))
-                .arg(Arg::with_name("shell")
+                        .takes_value(true),
+                )
+                .arg(
+                    Arg::with_name("shell")
                         .short("s")
                         .long("shell")
                         .value_name("SHELL")
-                        .help("Specify the shell program you'd like run after your environment is set up. The default shell is the Fish shell!")
-                        .takes_value(true)));
+                        .help(
+                            "Specify the shell program you'd like run after your environment \
+                             is set up.",
+                        )
+                        .takes_value(true),
+                ),
+        );
 
     let mut default_config_path = PathBuf::new();
     default_config_path.push(std::env::home_dir().expect("No home folder for this user."));
