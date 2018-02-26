@@ -4,6 +4,7 @@ version = "0.3.0"
 authors = ["David Lewis <davidlewis@icloud.com>"]
 description = "Easily apply environment variables loaded from a config file to a shell session."
 license = "MIT"
+homepage = "https://github.com/davidarmstronglewis/dingus"
 
 [dependencies]
 clap = "^2.30.0"
