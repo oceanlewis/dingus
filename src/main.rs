@@ -94,7 +94,7 @@ Custom base paths are currently not supported."#;
 
     let app = App::new("Dingus")
         .setting(AppSettings::ArgRequiredElseHelp)
-        .version("0.3.1")
+        .version("0.3.2")
         .author("David Lewis <david@inkstonehq.com>")
         .long_about(long_about)
         .subcommand(

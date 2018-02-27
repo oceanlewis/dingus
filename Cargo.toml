@@ -1,10 +1,11 @@
 [package]
 name = "dingus"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["David Lewis <davidlewis@icloud.com>"]
 description = "Easily apply environment variables loaded from a config file to a shell session."
 license = "MIT"
 homepage = "https://github.com/davidarmstronglewis/dingus"
+readme="README.md"
 
 [dependencies]
 clap = "^2.30.0"
