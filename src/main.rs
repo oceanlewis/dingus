@@ -19,7 +19,7 @@ fn print(shell: String, variable_list: VariableList) {
             "fish" => fmt::write(
                 &mut out_string,
                 format_args!(
-                    "set -gx {key} \"{value}\";",
+                    "set -gx {key} \"{value}\"; ",
                     key = variable_name,
                     value = contents
                 ),
@@ -27,7 +27,7 @@ fn print(shell: String, variable_list: VariableList) {
             _ => fmt::write(
                 &mut out_string,
                 format_args!(
-                    "export {key}=\"{value}\";",
+                    "export {key}=\"{value}\"; ",
                     key = variable_name,
                     value = contents,
                 ),
@@ -64,12 +64,22 @@ fn load_config_file(path: PathBuf) -> VariableList {
     variables
 }
 
+fn parse_shell_env_var() -> String {
+    std::env::var("SHELL")
+        .expect("Dingus needs to be run interactively")
+        .split("/")
+        .last()
+        .unwrap()
+        .to_string()
+}
+
 fn run_app(app: App, mut config_path: PathBuf) {
     let invocation = app.get_matches();
     let (command_name, subcommand_matches) = invocation.subcommand();
     let subcommand_matches = subcommand_matches.unwrap();
 
-    let current_shell = std::env::var("SHELL").expect("Dingus needs to be run interactively");
+    let current_shell = parse_shell_env_var();
+
     let shell_program = subcommand_matches
         .value_of("shell")
         .unwrap_or(&current_shell)
@@ -107,7 +117,7 @@ Custom base paths are currently not supported."#;
 
     let app = App::new("Dingus")
         .setting(AppSettings::ArgRequiredElseHelp)
-        .version("0.3.3")
+        .version("0.3.4")
         .author("David Lewis <david@inkstonehq.com>")
         .long_about(long_about)
         .subcommand(
