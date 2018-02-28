@@ -9,20 +9,33 @@ use clap::{App, AppSettings, Arg, SubCommand};
 type VariableList = HashMap<String, String>;
 
 fn print(shell: String, variable_list: VariableList) {
+    use std::io::{self, Write};
+    use std::fmt;
+
+    let mut out_string = String::new();
+
     for (variable_name, contents) in variable_list {
         match shell.as_str() {
-            "fish" => print!(
-                "set -gx {key} \"{value}\";",
-                key = variable_name,
-                value = contents
-            ),
-            _ => print!(
-                "export {key}=\"{value}\";",
-                key = variable_name,
-                value = contents
-            ),
+            "fish" => fmt::write(
+                &mut out_string,
+                format_args!(
+                    "set -gx {key} \"{value}\";",
+                    key = variable_name,
+                    value = contents
+                ),
+            ).expect("Failed to write to a string!"),
+            _ => fmt::write(
+                &mut out_string,
+                format_args!(
+                    "export {key}=\"{value}\";",
+                    key = variable_name,
+                    value = contents,
+                ),
+            ).expect("Failed to write to a string!"),
         }
     }
+
+    let _ = writeln!(&mut io::stdout(), "{}", out_string);
 }
 
 fn session(shell: String, variable_list: VariableList) {
@@ -94,7 +107,7 @@ Custom base paths are currently not supported."#;
 
     let app = App::new("Dingus")
         .setting(AppSettings::ArgRequiredElseHelp)
-        .version("0.3.2")
+        .version("0.3.3")
         .author("David Lewis <david@inkstonehq.com>")
         .long_about(long_about)
         .subcommand(
