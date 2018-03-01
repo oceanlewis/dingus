@@ -10,32 +10,31 @@ type VariableList = HashMap<String, String>;
 
 fn print(shell: String, variable_list: VariableList) {
     use std::io::{self, Write};
-    use std::fmt;
 
-    let mut out_string = String::new();
+    let mut set_commands: Vec<String> = Vec::with_capacity(variable_list.len());
 
     for (variable_name, contents) in variable_list {
         match shell.as_str() {
-            "fish" => fmt::write(
-                &mut out_string,
+            "fish" => set_commands.push(
                 format_args!(
                     "set -gx {key} \"{value}\"; ",
                     key = variable_name,
                     value = contents
-                ),
-            ).expect("Failed to write to a string!"),
-            _ => fmt::write(
-                &mut out_string,
+                ).to_string(),
+            ),
+            _ => set_commands.push(
                 format_args!(
                     "export {key}=\"{value}\"; ",
                     key = variable_name,
                     value = contents,
-                ),
-            ).expect("Failed to write to a string!"),
+                ).to_string(),
+            ),
         }
     }
 
-    let _ = writeln!(&mut io::stdout(), "{}", out_string);
+    let stdout = io::stdout();
+    let mut handle = stdout.lock();
+    handle.write_all(set_commands.join(" ").as_bytes()).unwrap();
 }
 
 fn session(shell: String, variable_list: VariableList) {
@@ -117,7 +116,7 @@ Custom base paths are currently not supported."#;
 
     let app = App::new("Dingus")
         .setting(AppSettings::ArgRequiredElseHelp)
-        .version("0.3.4")
+        .version("0.3.5")
         .author("David Lewis <david@inkstonehq.com>")
         .long_about(long_about)
         .subcommand(

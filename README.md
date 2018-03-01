@@ -43,9 +43,9 @@ HELLO: Hello, Dingus Session!
 
 #### Dingus Print Example
 
-Run `dingus print -c example_1.yaml`. See how `dingus` found the `example.yaml` file we created, read its contents, and printed out a command? That command can be piped into `eval` to set those variables directly in your current shell session. Neat, huh? `dingus` knows what shell you're running by looking at your `$SHELL` variable and printing out a command for that shell's syntax. I've only tested this in the `fish` and `bash` shells, so I don't know if I've got it right for all shells (actually, I know I haven't). If this doesn't work properly for you let me know what sytax I should be using for your shell and I'll toss it in there.
+Run `dingus print -c example_1.yaml`. See how `dingus` found the `example.yaml` file we created, read its contents, and printed out a command? That command can be piped into `source -` to set those variables directly in your current shell session. Neat, huh? `dingus` knows what shell you're running by looking at your `$SHELL` variable and printing out a command for that shell's syntax. I've only tested this in the `fish` and `bash` shells, so I don't know if I've got it right for all shells (actually, I know I haven't). If this doesn't work properly for you let me know what sytax I should be using for your shell and I'll toss it in there.
 
-The full command to apply the variables to your shell is `dingus print -c example_1.yaml | eval`. Normally it's discouraged to pipe anything into `eval` since it can open up remote code execution vulnerabilities, but you're not doing this on a production server so it's cool (right?).
+The full command to apply the variables to your shell is `dingus print -c example_1.yaml | source -`. Normally it's discouraged to pipe anything into `source -` since it can open up remote code execution vulnerabilities, but you're not doing this on a production server so it's cool (right?).
 
 Check it out: `echo $HELLO` and `echo $MULTI_LINE` both contain the values you set in the file `~/.config/dingus/example_1.yaml`.
 
