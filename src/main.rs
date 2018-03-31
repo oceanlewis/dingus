@@ -85,7 +85,7 @@ fn run_app(app: App, mut config_path: PathBuf) {
         .to_string();
 
     config_path.push(subcommand_matches.value_of("config").unwrap());
-    let variable_list = load_config_file(config_path);
+    let variable_list = load_config_file(config_path.with_extension("yaml"));
 
     match command_name {
         "print" => {
@@ -116,7 +116,7 @@ Custom base paths are currently not supported."#;
 
     let app = App::new("Dingus")
         .setting(AppSettings::ArgRequiredElseHelp)
-        .version("0.3.5")
+        .version("0.3.6")
         .author("David Lewis <david@inkstonehq.com>")
         .long_about(long_about)
         .subcommand(
