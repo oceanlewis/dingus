@@ -116,7 +116,7 @@ Custom base paths are currently not supported."#;
 
     let app = App::new("Dingus")
         .setting(AppSettings::ArgRequiredElseHelp)
-        .version("0.3.6")
+        .version("0.3.7")
         .author("David Lewis <david@inkstonehq.com>")
         .long_about(long_about)
         .subcommand(
@@ -168,7 +168,8 @@ that session will not affect the parent session."#,
                              is set up.",
                         )
                         .takes_value(true),
-                ),
+                )
+                .alias("shell"),
         );
 
     let mut default_config_path = PathBuf::new();
