@@ -2,5 +2,8 @@
 /target/
 **/*.rs.bk
 
+# Rust Language Server
+**/*.rs.rustfmt
+
 # OS Specific
 .DS_Store
