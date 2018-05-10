@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.4.0]
+### Added
+- New `list` subcommand lists available yaml files in Dingus' config directory
+
 ## [0.3.6]
 ### Changed
 - config files no longer need to be specified with a '.yaml' extension

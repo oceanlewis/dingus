@@ -3,9 +3,9 @@ pub extern crate clap;
 
 use clap::App;
 use std::collections::HashMap;
-use std::path::PathBuf;
-use std::fs::File;
 use std::env;
+use std::fs::File;
+use std::path::PathBuf;
 
 use dingus::error::*;
 
@@ -44,14 +44,31 @@ fn print(shell: String, variable_list: VariableList) -> Result<()> {
 fn session(shell: String, variable_list: VariableList) -> Result<()> {
     use std::process::Command;
 
-    //let error_text = format!("{} session failed to start!", shell);
-
-    match Command::new(shell).envs(&variable_list).status() {
-        Ok(_) => {}
-        Err(err) => return Err(Error::BadShellVar(err)),
-    };
+    Command::new(shell)
+        .envs(&variable_list)
+        .status()
+        .map_err(|err| Error::BadShellVar(err))?;
 
     println!("Exiting Dingus Session");
+    Ok(())
+}
+
+fn list(config_path: PathBuf) -> Result<()> {
+    use std::io::{self, Write};
+    let mut stdout = io::stdout();
+
+    for entry in config_path.read_dir()? {
+        let path = entry?.path();
+
+        if let Some(extension) = path.extension() {
+            if extension == "yaml" {
+                let file_name = path.file_name().ok_or(Error::FileNameUnreadable)?;
+                write!(&mut stdout, "{}\n", file_name.to_string_lossy())
+                    .or(Err(Error::StdIOWriteError))?;
+            }
+        }
+    }
+
     Ok(())
 }
 
@@ -82,21 +99,30 @@ fn parse_shell_env_var() -> Result<String> {
 pub fn run(app: App, mut config_path: PathBuf) -> Result<()> {
     let invocation = app.get_matches();
     let (command_name, subcommand_matches) = invocation.subcommand();
-    let subcommand_matches = subcommand_matches.unwrap();
-
-    let current_shell = parse_shell_env_var()?;
-
-    let shell_program = subcommand_matches
-        .value_of("shell")
-        .unwrap_or(&current_shell)
-        .to_string();
-
-    config_path.push(subcommand_matches.value_of("config").unwrap());
-    let variable_list = load_config_file(config_path.with_extension("yaml"))?;
+    let subcommand_matches = subcommand_matches.ok_or(Error::SubCommandNotSpecified)?;
 
     match command_name {
-        "print" => print(shell_program, variable_list),
-        "session" => session(shell_program, variable_list),
+        "print" | "session" => {
+            let current_shell = parse_shell_env_var()?;
+
+            let shell_program = subcommand_matches
+                .value_of("shell")
+                .unwrap_or(&current_shell)
+                .to_string();
+
+            config_path.push(subcommand_matches
+                .value_of("config")
+                .ok_or(Error::ConfigFileNotSpecified)?);
+
+            let variable_list = load_config_file(config_path.with_extension("yaml"))?;
+
+            match command_name {
+                "print" => print(shell_program, variable_list),
+                "session" => session(shell_program, variable_list),
+                _ => Ok(()),
+            }
+        }
+        "list" => list(config_path),
         _ => Err(Error::BadCommandError),
     }
 }

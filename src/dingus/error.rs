@@ -1,7 +1,4 @@
-use std::result;
-use std::fmt;
-use std::io;
-use std::env;
+use std::{env, fmt, io, result};
 
 pub extern crate serde_yaml;
 use self::serde_yaml::Error as YamlError;
@@ -14,6 +11,11 @@ pub enum Error {
     SerdeYamlError(YamlError),
     BadShellVar(io::Error),
     BadCommandError,
+    SubCommandNotSpecified,
+    ConfigFileNotSpecified,
+    FileNameUnreadable,
+    StdIOWriteError,
+    ConfigPathNotFound,
 }
 
 impl fmt::Display for Error {
@@ -33,6 +35,15 @@ impl fmt::Display for Error {
             &Error::SerdeYamlError(_) => "The config file you specified isn't valid YAML",
             &Error::BadCommandError => "Dingus doesn't support that Subcommand",
             &Error::BadShellVar(_) => "The <SHELL> argument provided to --shell is invalid",
+            &Error::SubCommandNotSpecified => "No [SUBCOMMAND] specified",
+            &Error::ConfigFileNotSpecified => "No <FILE> passed to --config option",
+            &Error::FileNameUnreadable => {
+                "This file's filename isn't valid unicode and could not be read"
+            }
+            &Error::StdIOWriteError => "Unable to write to Standard Out",
+            &Error::ConfigPathNotFound => {
+                "The default config path of `$HOME/.config/dingus` doesn't exist"
+            }
         };
 
         write!(f, "{}", msg)

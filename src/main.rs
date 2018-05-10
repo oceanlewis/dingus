@@ -4,7 +4,7 @@ extern crate clap;
 pub use clap::{App, AppSettings, Arg, SubCommand};
 
 mod dingus;
-use dingus::app::run;
+use dingus::{app::run, error::Error};
 
 fn main() {
     let long_about = r#"
@@ -25,8 +25,8 @@ Custom base paths are currently not supported."#;
     let app = App::new("Dingus")
         .setting(AppSettings::ArgRequiredElseHelp)
         .setting(AppSettings::InferSubcommands)
-        .version("0.3.8")
-        .author("David Lewis <david@inkstonehq.com>")
+        .version("0.4.0")
+        .author("David Armstrong Lewis <david@weassemble.com>")
         .long_about(long_about)
         .subcommand(
             SubCommand::with_name("print")
@@ -79,11 +79,21 @@ that session will not affect the parent session."#,
                         .takes_value(true),
                 )
                 .alias("shell"),
+        )
+        .subcommand(
+            SubCommand::with_name("list")
+                .about(r#"List possible options available for --config option."#)
+                .alias("ls"),
         );
 
     let mut default_config_path = PathBuf::new();
     default_config_path.push(std::env::home_dir().expect("No home folder for this user."));
     default_config_path.push(".config/dingus");
+
+    if !default_config_path.exists() {
+        eprintln!("ERROR: {}", Error::ConfigPathNotFound);
+        std::process::exit(1);
+    }
 
     match run(app, default_config_path) {
         Ok(_) => {}
