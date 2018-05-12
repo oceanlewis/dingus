@@ -21,27 +21,27 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let msg = match self {
-            &Error::EnvError(ref err) => match err {
-                &env::VarError::NotPresent => {
+            Error::EnvError(err) => match err {
+                env::VarError::NotPresent => {
                     "Looks like your $SHELL environment variable isn't set properly"
                 }
-                &env::VarError::NotUnicode(_) => {
+                env::VarError::NotUnicode(_) => {
                     "Your $SHELL environment variable isn't valid unicode"
                 }
             },
-            &Error::ConfigIOError(_) => {
+            Error::ConfigIOError(_) => {
                 "The config file you specified doesn't exist or isn't valid unicode"
             }
-            &Error::SerdeYamlError(_) => "The config file you specified isn't valid YAML",
-            &Error::BadCommandError => "Dingus doesn't support that Subcommand",
-            &Error::BadShellVar(_) => "The <SHELL> argument provided to --shell is invalid",
-            &Error::SubCommandNotSpecified => "No [SUBCOMMAND] specified",
-            &Error::ConfigFileNotSpecified => "No <FILE> passed to --config option",
-            &Error::FileNameUnreadable => {
+            Error::SerdeYamlError(_) => "The config file you specified isn't valid YAML",
+            Error::BadCommandError => "Dingus doesn't support that Subcommand",
+            Error::BadShellVar(_) => "The <SHELL> argument provided to --shell is invalid",
+            Error::SubCommandNotSpecified => "No [SUBCOMMAND] specified",
+            Error::ConfigFileNotSpecified => "No <FILE> passed to --config option",
+            Error::FileNameUnreadable => {
                 "This file's filename isn't valid unicode and could not be read"
             }
-            &Error::StdIOWriteError => "Unable to write to Standard Out",
-            &Error::ConfigPathNotFound => {
+            Error::StdIOWriteError => "Unable to write to Standard Out",
+            Error::ConfigPathNotFound => {
                 "The default config path of `$HOME/.config/dingus` doesn't exist"
             }
         };
