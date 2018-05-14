@@ -11,13 +11,13 @@ use dingus::error::*;
 
 type VariableList = HashMap<String, String>;
 
-fn print(shell: String, variable_list: VariableList) -> Result<()> {
+fn print(shell: &str, variable_list: VariableList) -> Result<()> {
     use std::io::{self, Write};
 
     let mut set_commands: Vec<String> = Vec::with_capacity(variable_list.len());
 
     for (variable_name, contents) in variable_list {
-        match shell.as_str() {
+        match shell {
             "fish" => set_commands.push(
                 format_args!(
                     "set -gx {key} \"{value}\"; ",
@@ -41,19 +41,19 @@ fn print(shell: String, variable_list: VariableList) -> Result<()> {
     Ok(())
 }
 
-fn session(shell: String, variable_list: VariableList) -> Result<()> {
+fn session(shell: String, variable_list: &VariableList) -> Result<()> {
     use std::process::Command;
 
     Command::new(shell)
-        .envs(&variable_list)
+        .envs(variable_list)
         .status()
-        .map_err(|err| Error::BadShellVar(err))?;
+        .map_err(Error::BadShellVar)?;
 
     println!("Exiting Dingus Session");
     Ok(())
 }
 
-fn list(config_path: PathBuf) -> Result<()> {
+fn list(config_path: &PathBuf) -> Result<()> {
     use std::io::{self, Write};
     let mut stdout = io::stdout();
 
@@ -63,7 +63,7 @@ fn list(config_path: PathBuf) -> Result<()> {
         if let Some(extension) = path.extension() {
             if extension == "yaml" {
                 let file_name = path.file_name().ok_or(Error::FileNameUnreadable)?;
-                write!(&mut stdout, "{}\n", file_name.to_string_lossy())
+                writeln!(&mut stdout, "{}", file_name.to_string_lossy())
                     .or(Err(Error::StdIOWriteError))?;
             }
         }
@@ -88,7 +88,7 @@ fn parse_shell_env_var() -> Result<String> {
     let shell_var = env::var("SHELL")?;
 
     let shell_var = shell_var
-        .split("/")
+        .split('/')
         .last()
         .unwrap_or(&shell_var)
         .to_string();
@@ -117,12 +117,12 @@ pub fn run(app: App, mut config_path: PathBuf) -> Result<()> {
             let variable_list = load_config_file(config_path.with_extension("yaml"))?;
 
             match command_name {
-                "print" => print(shell_program, variable_list),
-                "session" => session(shell_program, variable_list),
+                "print" => print(&shell_program, variable_list),
+                "session" => session(shell_program, &variable_list),
                 _ => Ok(()),
             }
         }
-        "list" => list(config_path),
+        "list" => list(&config_path),
         _ => Err(Error::BadCommandError),
     }
 }
