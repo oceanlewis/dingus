@@ -96,6 +96,21 @@ fn parse_shell_env_var() -> Result<String> {
     Ok(shell_var)
 }
 
+fn set_dingus_level(variable_list: &mut VariableList) {
+    let env_name = "DINGUS_LEVEL";
+    let default_level = 1;
+
+    let level = match env::var(&env_name) {
+        Ok(var) => match var.parse::<u32>() {
+            Ok(current_level) => current_level,
+            Err(_) => default_level,
+        },
+        Err(_) => default_level,
+    };
+
+    variable_list.insert(env_name.to_owned(), level.to_string());
+}
+
 pub fn run(app: App, mut config_path: PathBuf) -> Result<()> {
     let invocation = app.get_matches();
     let (command_name, subcommand_matches) = invocation.subcommand();
@@ -114,7 +129,8 @@ pub fn run(app: App, mut config_path: PathBuf) -> Result<()> {
                 .value_of("config")
                 .ok_or(Error::ConfigFileNotSpecified)?);
 
-            let variable_list = load_config_file(config_path.with_extension("yaml"))?;
+            let mut variable_list = load_config_file(config_path.with_extension("yaml"))?;
+            set_dingus_level(&mut variable_list);
 
             match command_name {
                 "print" => print(&shell_program, variable_list),

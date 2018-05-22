@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.4.1]
+### Added
+- Set and Increment the `DINGUS_LEVEL` environment variable as shells become nested
+
 ## [0.4.0]
 ### Added
 - New `list` subcommand lists available yaml files in Dingus' config directory

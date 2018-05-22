@@ -1,6 +1,6 @@
 # Dingus
 
-Dingus is a simple tool by and for the folks at Assemble to ease management of environment variables. Dingus supports two ways of applying environment variables (through the `print` and `session` subcommands), whichever you'd prefer is up to you.
+Dingus is a simple tool by and for the folks at Assemble to ease management of environment variables. Dingus supports two ways of applying environment variables (through the `print` and `session` subcommands), whichever you'd prefer is up to you. In the process of doing so, Dingus will set and increment the `DINGUS_LEVEL` environment variable so that it's possible to track the number of nested sessions you might be in.
 
 ### Requirements
 
