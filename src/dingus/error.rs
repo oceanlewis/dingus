@@ -1,18 +1,19 @@
-use std::{env, fmt, io, result};
+use std::{env, fmt, io};
 
 pub extern crate serde_yaml;
 use self::serde_yaml::Error as YamlError;
 
-pub type Result<T> = result::Result<T, Error>;
+//pub type Result<T> = result::Result<T, Error>;
 
+#[derive(Debug)]
 pub enum Error {
     EnvError(env::VarError),
-    ConfigIOError(io::Error),
+    IOError(io::Error),
     SerdeYamlError(YamlError),
     BadShellVar(io::Error),
     BadCommandError,
     SubCommandNotSpecified,
-    ConfigFileNotSpecified,
+    DingusFileNotFound,
     FileNameUnreadable,
     StdIOWriteError,
     ConfigPathNotFound,
@@ -29,14 +30,14 @@ impl fmt::Display for Error {
                     "Your $SHELL environment variable isn't valid unicode"
                 }
             },
-            Error::ConfigIOError(_) => {
+            Error::IOError(_) => {
                 "The config file you specified doesn't exist or isn't valid unicode"
             }
             Error::SerdeYamlError(_) => "The config file you specified isn't valid YAML",
             Error::BadCommandError => "Dingus doesn't support that Subcommand",
             Error::BadShellVar(_) => "The <SHELL> argument provided to --shell is invalid",
             Error::SubCommandNotSpecified => "No [SUBCOMMAND] specified",
-            Error::ConfigFileNotSpecified => "No <FILE> passed to --config option",
+            Error::DingusFileNotFound => "Couldn't find a YAML file to load",
             Error::FileNameUnreadable => {
                 "This file's filename isn't valid unicode and could not be read"
             }
@@ -58,7 +59,7 @@ impl From<env::VarError> for Error {
 
 impl From<io::Error> for Error {
     fn from(err: io::Error) -> Error {
-        Error::ConfigIOError(err)
+        Error::IOError(err)
     }
 }
 

@@ -25,7 +25,7 @@ Custom base paths are currently not supported."#;
     let app = App::new("Dingus")
         .setting(AppSettings::ArgRequiredElseHelp)
         .setting(AppSettings::InferSubcommands)
-        .version("0.4.1")
+        .version("0.4.2")
         .author("David Armstrong Lewis <david@weassemble.com>")
         .long_about(long_about)
         .subcommand(
@@ -40,7 +40,7 @@ to your current session."#,
                         .long("config")
                         .value_name("FILE")
                         .help(&config_argument_help)
-                        .required(true)
+                        .required(false)
                         .takes_value(true),
                 )
                 .arg(
@@ -64,7 +64,7 @@ that session will not affect the parent session."#,
                         .long("config")
                         .value_name("FILE")
                         .help(&config_argument_help)
-                        .required(true)
+                        .required(false)
                         .takes_value(true),
                 )
                 .arg(

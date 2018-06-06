@@ -11,7 +11,7 @@ use dingus::error::*;
 
 type VariableList = HashMap<String, String>;
 
-fn print(shell: &str, variable_list: VariableList) -> Result<()> {
+fn print(shell: &str, variable_list: VariableList) -> Result<(), Error> {
     use std::io::{self, Write};
 
     let mut set_commands: Vec<String> = Vec::with_capacity(variable_list.len());
@@ -41,7 +41,7 @@ fn print(shell: &str, variable_list: VariableList) -> Result<()> {
     Ok(())
 }
 
-fn session(shell: String, variable_list: &VariableList) -> Result<()> {
+fn session(shell: String, variable_list: &VariableList) -> Result<(), Error> {
     use std::process::Command;
 
     Command::new(shell)
@@ -53,7 +53,7 @@ fn session(shell: String, variable_list: &VariableList) -> Result<()> {
     Ok(())
 }
 
-fn list(config_path: &PathBuf) -> Result<()> {
+fn list(config_path: &PathBuf) -> Result<(), Error> {
     use std::io::{self, Write};
     let mut stdout = io::stdout();
 
@@ -72,7 +72,7 @@ fn list(config_path: &PathBuf) -> Result<()> {
     Ok(())
 }
 
-fn load_config_file(path: PathBuf) -> Result<VariableList> {
+fn parse_dingus_file(path: PathBuf) -> Result<VariableList, Error> {
     use std::io::Read;
 
     let mut config_file = File::open(path)?;
@@ -84,7 +84,7 @@ fn load_config_file(path: PathBuf) -> Result<VariableList> {
     Ok(variables)
 }
 
-fn parse_shell_env_var() -> Result<String> {
+fn parse_shell_env_var() -> Result<String, Error> {
     let shell_var = env::var("SHELL")?;
 
     let shell_var = shell_var
@@ -111,7 +111,30 @@ fn set_dingus_level(variable_list: &mut VariableList) {
     variable_list.insert(env_name.to_owned(), level.to_string());
 }
 
-pub fn run(app: App, mut config_path: PathBuf) -> Result<()> {
+fn recursively_walk_upwards_for_dingus_file(here: PathBuf) -> Option<PathBuf> {
+    let mut possible_location = here.clone();
+    possible_location.push(".dingus");
+
+    match possible_location.exists() {
+        true => Some(possible_location),
+        false => {
+            let parent = here.parent()?;
+            recursively_walk_upwards_for_dingus_file(parent.to_path_buf())
+        }
+    }
+}
+
+fn find_a_dingus_file(matches: &clap::ArgMatches, config_path: &mut PathBuf) -> Option<PathBuf> {
+    match matches.value_of("config") {
+        Some(filename) => {
+            config_path.push(filename);
+            Some(config_path.with_extension("yaml"))
+        }
+        None => None,
+    }
+}
+
+pub fn run(app: App, mut config_path: PathBuf) -> Result<(), Error> {
     let invocation = app.get_matches();
     let (command_name, subcommand_matches) = invocation.subcommand();
     let subcommand_matches = subcommand_matches.ok_or(Error::SubCommandNotSpecified)?;
@@ -119,17 +142,20 @@ pub fn run(app: App, mut config_path: PathBuf) -> Result<()> {
     match command_name {
         "print" | "session" => {
             let current_shell = parse_shell_env_var()?;
+            let current_dir = env::current_dir()?;
 
             let shell_program = subcommand_matches
                 .value_of("shell")
                 .unwrap_or(&current_shell)
                 .to_string();
 
-            config_path.push(subcommand_matches
-                .value_of("config")
-                .ok_or(Error::ConfigFileNotSpecified)?);
+            let dingus_file: Option<PathBuf> =
+                find_a_dingus_file(subcommand_matches, &mut config_path)
+                    .or_else(|| recursively_walk_upwards_for_dingus_file(current_dir));
 
-            let mut variable_list = load_config_file(config_path.with_extension("yaml"))?;
+            let dingus_file = dingus_file.ok_or(Error::DingusFileNotFound)?;
+
+            let mut variable_list = parse_dingus_file(dingus_file)?;
             set_dingus_level(&mut variable_list);
 
             match command_name {

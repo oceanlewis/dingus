@@ -17,12 +17,6 @@ As root: `apt-get install rustc`
 
 Do note that your `$PATH` might need to be altered so that your system knows about `rustc` the Rust compiler, `cargo` Rust's package manager, and `~/.cargo/bin` the default location for compiled binaries to be installed. `rustup` will inform you of how to make the change during its installation process, your systems package manage may or may not be as benevolent.
 
-### Keeping Dingus Up to Date
-
-Once you have the Rust compiler installed you're free to install Dingus with `cargo install dingus`. I'd also recommend installing [cargo-update](https://github.com/nabijaczleweli/cargo-update) so you can update all your Rust binaries in one go.
-
-`cargo install cargo-update` will download, compile and install the `cargo` subcommand `install-update`. Once installed you should be able to rust `cargo install-update -a` to update any binaries you've installed with `cargo` in a hands-free manner.
-
 ### Using Dingus
 
 Dingus has some nice built in help messages in case you forget, but here's a quick tutorial regardless.
@@ -41,9 +35,14 @@ This file should exist at `~/.config/dingus/example_2.yaml` with the following c
 HELLO: Hello, Dingus Session!
 ```
 
+#### Implicit Config Files
+
+__As of version 0.4.2__ Dingus will search upwards, recursively, for a `.dingus` Yaml file if no `--config` file is specified. Just don't commit it to source control if you have secrets to keep.
+
+
 #### Dingus List Example
 
-As of version 0.4.0 it's easy to see what config files you have available. Try running `dingus list` or `dingus ls` to see options you can supply to the `--config` parameter of the Print and Session subcommands. 
+__As of version 0.4.0__ it's easy to see what config files you have available. Try running `dingus list` or `dingus ls` to see options you can supply to the `--config` parameter of the Print and Session subcommands. 
 
 #### Dingus Print Example
 
@@ -59,6 +58,11 @@ In case you don't want to pollute your current shell session with environment va
 
 Try running `dingus session -c example_2`. You're now in a new shell session. Try `echo $HELLO`. Yep, we've applied the variables from `~/.config/dingus/example_2.yaml`, which are now all accessible. Also available are any variables you set before entering the Dingus session, so if just ran the example in our "Dingus Print Example" section you'll find that `$MULTI_LINE` is still available.
 
-As of version 0.3.7 Dingus will also accept `shell` when trying to invoke this subcommand. The semantics were close enough that it made sense to alias the two.
+__As of version 0.3.7__ Dingus will also accept `shell` when trying to invoke this subcommand. The semantics were close enough that it made sense to alias the two.
 
-Hope this explains stuff a bit and helps you save yourself some time!
+### Keeping Dingus Up to Date
+
+Once you have the Rust compiler installed you're free to install Dingus with `cargo install dingus`. I'd also recommend installing [cargo-update](https://github.com/nabijaczleweli/cargo-update) so you can update all your Rust binaries in one go.
+
+`cargo install cargo-update` will download, compile and install the `cargo` subcommand `install-update`. Once installed you should be able to rust `cargo install-update -a` to update any binaries you've installed with `cargo` in a hands-free manner.
+

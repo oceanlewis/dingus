@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.4.2]
+### Changed
+- `config` parameter for `session` and `print` subcommands is now optional. Dingus will look for ".dingus" file recursively upwards
+
 ## [0.4.1]
 ### Added
 - Set and Increment the `DINGUS_LEVEL` environment variable as shells become nested
