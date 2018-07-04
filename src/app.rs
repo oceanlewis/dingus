@@ -1,13 +1,11 @@
-pub extern crate clap;
-//pub extern crate serde_yaml;
-
-use clap::App;
 use std::collections::HashMap;
 use std::env;
 use std::fs::File;
 use std::path::PathBuf;
 
-use dingus::error::*;
+use clap::App;
+
+use crate::error::*;
 
 type VariableList = HashMap<String, String>;
 

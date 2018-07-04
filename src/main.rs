@@ -1,10 +1,13 @@
+#![feature(rust_2018_preview)]
+
 use std::path::PathBuf;
 
-extern crate clap;
-pub use clap::{App, AppSettings, Arg, SubCommand};
+use clap::{App, AppSettings, Arg, SubCommand};
 
-mod dingus;
-use dingus::{app::run, error::Error};
+mod app;
+mod error;
+
+use crate::{app::run, error::Error};
 
 fn main() {
     let long_about = r#"

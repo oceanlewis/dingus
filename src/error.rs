@@ -1,9 +1,6 @@
 use std::{env, fmt, io};
 
-pub extern crate serde_yaml;
-use self::serde_yaml::Error as YamlError;
-
-//pub type Result<T> = result::Result<T, Error>;
+use serde_yaml::Error as YamlError;
 
 #[derive(Debug)]
 pub enum Error {
