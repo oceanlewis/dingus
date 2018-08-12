@@ -5,12 +5,6 @@ pub const AUTHORS: &'static str = env!("CARGO_PKG_AUTHORS");
 pub mod common {
     pub const ABOUT: &'static str = r#"
 Manage your computing environments variables with ease!
-
-By default `dingus` will believe your current shell is whatever program your
-$SHELL evironment variable is set to. I would not recommend changing this,
-instead you can tell `dingus` to use a different shell by supplying a
-`--shell SHELL` argument.
-
 Inspired by Juan Karam's original Ruby implementation!"#;
 
     pub const CONFIG_ARG_TEXT: &'static str =
@@ -19,17 +13,13 @@ Inspired by Juan Karam's original Ruby implementation!"#;
 }
 
 pub mod print {
-    pub const ABOUT: &'static str =
-        "Print out a shell command you can run to apply variables directly \
-         to your current session.";
+    pub const ABOUT: &'static str = "Prints a shell command to standard out.";
 
     pub const SHELL_ARG_TEXT: &'static str = "Specify the name of your shell environment.";
 }
 
 pub mod session {
-    pub const ABOUT: &'static str =
-        r#"Open a new shell with environment variables applied. Changes made to
-that session will not affect the parent session."#;
+    pub const ABOUT: &'static str = "Open a new shell with environment variables applied.";
 
     pub const SHELL_ARG_TEXT: &'static str =
         "Specify the shell program you'd like run after your environment \
