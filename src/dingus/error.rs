@@ -11,8 +11,7 @@ pub enum Error {
     IOError(io::Error),
     SerdeYamlError(YamlError),
     BadShellVar(io::Error),
-    BadCommandError,
-    SubCommandNotSpecified,
+    NoSubcommandMatch,
     DingusFileNotFound,
     FileNameUnreadable,
     StdIOWriteError,
@@ -34,9 +33,8 @@ impl fmt::Display for Error {
                 "The config file you specified doesn't exist or isn't valid unicode"
             }
             Error::SerdeYamlError(_) => "The config file you specified isn't valid YAML",
-            Error::BadCommandError => "Dingus doesn't support that Subcommand",
             Error::BadShellVar(_) => "The <SHELL> argument provided to --shell is invalid",
-            Error::SubCommandNotSpecified => "No [SUBCOMMAND] specified",
+            Error::NoSubcommandMatch => "Invalid [SUBCOMMAND] specified",
             Error::DingusFileNotFound => "Couldn't find a YAML file to load",
             Error::FileNameUnreadable => {
                 "This file's filename isn't valid unicode and could not be read"

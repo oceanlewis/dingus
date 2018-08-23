@@ -1,12 +1,16 @@
-use std::path::PathBuf;
+// use std::path::PathBuf;
 
 extern crate clap;
 pub use clap::{App, AppSettings, Arg, SubCommand};
 
 mod dingus;
-use dingus::{app::run, constants::*, error::Error};
+use dingus::{
+    app::{Application, Dingus},
+    constants::{AUTHORS, NAME, VERSION, common, list, print, session},
+    error::Error,
+};
 
-fn main() {
+fn main() -> Result<(), Error> {
     let config = SubCommand::with_name("print")
         .about(print::ABOUT)
         .arg(
@@ -60,17 +64,5 @@ fn main() {
         .subcommand(session)
         .subcommand(list);
 
-    let mut default_config_path = PathBuf::new();
-    default_config_path.push(std::env::home_dir().expect("No home folder for this user."));
-    default_config_path.push(".config/dingus");
-
-    if !default_config_path.exists() {
-        eprintln!("ERROR: {}", Error::ConfigPathNotFound);
-        std::process::exit(1);
-    }
-
-    match run(app, default_config_path) {
-        Ok(_) => {}
-        Err(e) => eprintln!("ERROR: {}", e),
-    }
+    Ok(Dingus::from_clap(app)?.run()?)
 }
