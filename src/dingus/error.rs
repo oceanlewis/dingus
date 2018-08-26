@@ -3,8 +3,6 @@ use std::{env, fmt, io};
 pub extern crate serde_yaml;
 use self::serde_yaml::Error as YamlError;
 
-//pub type Result<T> = result::Result<T, Error>;
-
 #[derive(Debug)]
 pub enum Error {
     EnvError(env::VarError),
@@ -45,7 +43,7 @@ impl fmt::Display for Error {
             }
         };
 
-        write!(f, "{}", msg)
+        write!(f, "ERROR: {}", msg)
     }
 }
 

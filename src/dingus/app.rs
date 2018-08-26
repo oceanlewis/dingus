@@ -17,12 +17,14 @@ pub trait Application<A, E> {
     fn run(self) -> Result<(), E>;
 }
 
+#[derive(Debug)]
 enum SubCommand {
     Print,
     Session,
     List,
 }
 
+#[derive(Debug)]
 enum Shell {
     BashLike(String),
     Fish(String),
@@ -37,11 +39,12 @@ impl Shell {
     }
 }
 
+#[derive(Debug)]
 pub struct Dingus {
     subcommand: SubCommand,
     shell: Shell,
-    environment: VariableMap,
-    config_path: PathBuf,
+    config_dir_path: PathBuf,
+    given_config_file: Option<PathBuf>,
 }
 
 impl Application<Dingus, Error> for Dingus {
@@ -74,7 +77,7 @@ impl Application<Dingus, Error> for Dingus {
             }
         };
 
-        let config_path = {
+        let config_dir_path = {
             let mut default_config_path = PathBuf::new();
 
             default_config_path.push(env::home_dir().expect("No home folder for this user."));
@@ -87,26 +90,23 @@ impl Application<Dingus, Error> for Dingus {
             default_config_path
         };
 
-        // We did this too early, this throws if we just run `dingus list`
-        // because it's going to look for a config file and fail!
-        let environment: VariableMap = {
-            let current_dir = env::current_dir()?;
-            let mut config_path = config_path.clone();
-
-            let dingus_file = Dingus::find_a_dingus_file(subcommand_matches, config_path)
-                .or_else(|| Dingus::recursively_walk_upwards_for_dingus_file(&current_dir))
-                .ok_or(Error::DingusFileNotFound)?;
-
-            let mut variable_map = Dingus::parse_dingus_file(dingus_file)?;
-            Dingus::set_dingus_level(&mut variable_map);
-            variable_map
+        let given_config_file = {
+            match subcommand_matches.value_of("config") {
+                Some(filename) => {
+                    let mut config_file = config_dir_path.clone();
+                    config_file.push(filename);
+                    config_file.with_extension("yaml");
+                    Some(config_file)
+                }
+                None => None,
+            }
         };
 
         Ok(Dingus {
             subcommand,
             shell,
-            environment,
-            config_path,
+            config_dir_path,
+            given_config_file,
         })
     }
 
@@ -120,7 +120,7 @@ impl Application<Dingus, Error> for Dingus {
 }
 
 impl Dingus {
-    fn parse_dingus_file(path: PathBuf) -> Result<VariableMap, Error> {
+    fn parse_dingus_file(path: &PathBuf) -> Result<VariableMap, Error> {
         use std::io::Read;
 
         let mut config_file = File::open(path)?;
@@ -147,7 +147,7 @@ impl Dingus {
         variable_list.insert(env_name.to_owned(), level.to_string());
     }
 
-    fn recursively_walk_upwards_for_dingus_file(here: &PathBuf) -> Option<PathBuf> {
+    fn recursively_walk_upwards_for_dingus_file(here: PathBuf) -> Option<PathBuf> {
         let mut possible_location = here.clone();
         possible_location.push(".dingus");
 
@@ -155,25 +155,32 @@ impl Dingus {
             Some(possible_location)
         } else {
             let parent = here.parent()?;
-            Dingus::recursively_walk_upwards_for_dingus_file(&parent.to_path_buf())
+            Dingus::recursively_walk_upwards_for_dingus_file(parent.to_path_buf())
         }
     }
 
-    fn find_a_dingus_file(matches: &clap::ArgMatches, mut config_path: PathBuf) -> Option<PathBuf> {
-        match matches.value_of("config") {
-            Some(filename) => {
-                config_path.push(filename);
-                Some(config_path.with_extension("yaml"))
+    // If we have a given config file, parse it. Otherwise walk upwards
+    // towards the root of the filesystem looking for a file named `.dingus`.
+    fn get_environment(&self) -> Result<VariableMap, Error> {
+        let file_to_parse: PathBuf = match self.given_config_file {
+            Some(ref path) => path.clone(),
+            None => {
+                let current_dir = env::current_dir()?;
+                Dingus::recursively_walk_upwards_for_dingus_file(current_dir)
+                    .ok_or(Error::DingusFileNotFound)?
             }
-            None => None,
-        }
+        };
+
+        let mut environment = Dingus::parse_dingus_file(&file_to_parse)?;
+        Dingus::set_dingus_level(&mut environment);
+        Ok(environment)
     }
 
     fn session(self) -> Result<(), Error> {
         use std::process::Command;
 
         Command::new(self.shell.command())
-            .envs(self.environment)
+            .envs(self.get_environment()?)
             .status()
             .map_err(Error::BadShellVar)?;
 
@@ -184,9 +191,10 @@ impl Dingus {
     fn print(self) -> Result<(), Error> {
         use std::io::{self, Write};
 
-        let mut set_commands: Vec<String> = Vec::with_capacity(self.environment.len());
+        let environment = self.get_environment()?;
+        let mut set_commands: Vec<String> = Vec::with_capacity(environment.len());
 
-        for (key, value) in self.environment {
+        for (key, value) in environment {
             match self.shell.command() {
                 "fish" => set_commands.push(
                     format_args!("set -gx {key} \"{value}\"; ", key = key, value = value)
@@ -209,7 +217,7 @@ impl Dingus {
         use std::io::{self, Write};
         let mut stdout = io::stdout();
 
-        for entry in self.config_path.read_dir()? {
+        for entry in self.config_dir_path.read_dir()? {
             let path = entry?.path();
 
             if let Some(extension) = path.extension() {

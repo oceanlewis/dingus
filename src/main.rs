@@ -1,16 +1,13 @@
-// use std::path::PathBuf;
-
 extern crate clap;
 pub use clap::{App, AppSettings, Arg, SubCommand};
 
 mod dingus;
 use dingus::{
     app::{Application, Dingus},
-    constants::{AUTHORS, NAME, VERSION, common, list, print, session},
-    error::Error,
+    constants::{common, list, print, session, AUTHORS, NAME, VERSION},
 };
 
-fn main() -> Result<(), Error> {
+fn main() {
     let config = SubCommand::with_name("print")
         .about(print::ABOUT)
         .arg(
@@ -64,5 +61,8 @@ fn main() -> Result<(), Error> {
         .subcommand(session)
         .subcommand(list);
 
-    Ok(Dingus::from_clap(app)?.run()?)
+    match Dingus::from_clap(app).and_then(|app| app.run()) {
+        Err(e) => eprintln!("ERROR: {}", e),
+        _ => {}
+    };
 }
