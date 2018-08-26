@@ -43,7 +43,7 @@ impl fmt::Display for Error {
             }
         };
 
-        write!(f, "ERROR: {}", msg)
+        write!(f, "{}", msg)
     }
 }
 

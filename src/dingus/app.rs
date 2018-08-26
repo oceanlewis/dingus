@@ -95,7 +95,7 @@ impl Application<Dingus, Error> for Dingus {
                 Some(filename) => {
                     let mut config_file = config_dir_path.clone();
                     config_file.push(filename);
-                    config_file.with_extension("yaml");
+                    config_file = config_file.with_extension("yaml");
                     Some(config_file)
                 }
                 None => None,
