@@ -1,4 +1,6 @@
+#[macro_use] extern crate failure;
 extern crate clap;
+
 pub use clap::{App, AppSettings, Arg, SubCommand};
 
 mod dingus;
