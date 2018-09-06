@@ -1,6 +1,6 @@
 [package]
 name = "dingus"
-version = "0.5.1"
+version = "0.5.2"
 authors = ["David Lewis <davidlewis@icloud.com>"]
 description = "Easily apply environment variables loaded from a config file to a shell session."
 license = "MIT"
@@ -12,3 +12,4 @@ clap = "^2.30.0"
 serde = "^1.0.27"
 serde_derive = "^1.0.27"
 serde_yaml = "^0.7.3"
+failure = "^0.1.2"
