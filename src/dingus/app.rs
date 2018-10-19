@@ -96,35 +96,7 @@ impl Application<Dingus, Error> for Dingus {
 
         let given_config_file = {
             match subcommand_matches.value_of("config") {
-                Some(filename) => {
-                    let mut config_file = config_dir_path.clone();
-                    config_file.push(filename);
-
-                    match config_file.extension().and_then(OsStr::to_str) {
-                        Some("yaml") | Some("yml") => {}
-                        None => {
-                            let (yaml, yml) = (
-                                config_file.with_extension("yaml"),
-                                config_file.with_extension("yml"),
-                            );
-
-                            let (yaml_exists, yml_exists) =
-                                (fs::metadata(&yaml).is_ok(), fs::metadata(&yml).is_ok());
-
-                            config_file = match (yaml_exists, yml_exists) {
-                                (true, false) => yaml,
-                                (false, true) => yml,
-                                (true, true) => Err(Error::ConflictingConfigPaths {
-                                    one: yaml,
-                                    two: yml,
-                                })?,
-                                _ => unreachable!(),
-                            };
-                        }
-                        _ => Err(Error::DingusFileNotFound)?,
-                    }
-                    Some(config_file)
-                }
+                Some(filename) => Dingus::resolve_config_file(config_dir_path.clone(), filename)?,
                 None => None,
             }
         };
@@ -157,6 +129,32 @@ impl Dingus {
         let variables: VariableMap = serde_yaml::from_str(&file_contents)?;
 
         Ok(variables)
+    }
+
+    fn resolve_config_file(mut path: PathBuf, filename: &str) -> Result<Option<PathBuf>, Error> {
+        path.push(filename);
+
+        match path.extension().and_then(OsStr::to_str) {
+            Some("yaml") | Some("yml") => {}
+            None => {
+                let (yaml, yml) = (path.with_extension("yaml"), path.with_extension("yml"));
+
+                let (yaml_exists, yml_exists) =
+                    (fs::metadata(&yaml).is_ok(), fs::metadata(&yml).is_ok());
+
+                path = match (yaml_exists, yml_exists) {
+                    (true, false) => yaml,
+                    (false, true) => yml,
+                    (true, true) => Err(Error::ConflictingConfigPaths {
+                        one: yaml,
+                        two: yml,
+                    })?,
+                    _ => unreachable!(),
+                };
+            }
+            _ => Err(Error::DingusFileNotFound)?,
+        }
+        Ok(Some(path))
     }
 
     fn set_dingus_level(variable_list: &mut VariableMap) {
