@@ -1,9 +1,12 @@
 pub extern crate clap;
 
-use std::collections::HashMap;
-use std::env;
-use std::fs::File;
-use std::path::PathBuf;
+use std::{
+    collections::HashMap,
+    env,
+    ffi::OsStr,
+    fs::{self, File},
+    path::PathBuf,
+};
 
 use dingus::error::*;
 
@@ -80,6 +83,7 @@ impl Application<Dingus, Error> for Dingus {
         let config_dir_path = {
             let mut default_config_path = PathBuf::new();
 
+            #[allow(deprecated)]
             default_config_path.push(env::home_dir().expect("No home folder for this user."));
             default_config_path.push(".config/dingus");
 
@@ -95,7 +99,30 @@ impl Application<Dingus, Error> for Dingus {
                 Some(filename) => {
                     let mut config_file = config_dir_path.clone();
                     config_file.push(filename);
-                    config_file = config_file.with_extension("yaml");
+
+                    match config_file.extension().and_then(OsStr::to_str) {
+                        Some("yaml") | Some("yml") => {}
+                        None => {
+                            let (yaml, yml) = (
+                                config_file.with_extension("yaml"),
+                                config_file.with_extension("yml"),
+                            );
+
+                            let (yaml_exists, yml_exists) =
+                                (fs::metadata(&yaml).is_ok(), fs::metadata(&yml).is_ok());
+
+                            config_file = match (yaml_exists, yml_exists) {
+                                (true, false) => yaml,
+                                (false, true) => yml,
+                                (true, true) => Err(Error::ConflictingConfigPaths {
+                                    one: yaml,
+                                    two: yml,
+                                })?,
+                                _ => unreachable!(),
+                            };
+                        }
+                        _ => Err(Error::DingusFileNotFound)?,
+                    }
                     Some(config_file)
                 }
                 None => None,

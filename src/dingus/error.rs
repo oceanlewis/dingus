@@ -1,4 +1,4 @@
-use std::{env, io};
+use std::{env, io, path::PathBuf};
 
 pub extern crate serde_yaml;
 use self::serde_yaml::Error as YamlError;
@@ -31,6 +31,15 @@ pub enum Error {
 
     #[fail(display = "The default config path of `$HOME/.config/dingus` doesn't exist")]
     ConfigPathNotFound,
+
+    #[fail(
+        display = "Found two conflicting config files, specify the file extension or consider renaming them:
+{:?}
+{:?}",
+        one,
+        two
+    )]
+    ConflictingConfigPaths { one: PathBuf, two: PathBuf },
 }
 
 impl From<env::VarError> for Error {

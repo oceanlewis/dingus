@@ -56,6 +56,8 @@ fn main() {
     let app = App::new(NAME)
         .setting(AppSettings::ArgRequiredElseHelp)
         .setting(AppSettings::InferSubcommands)
+        .setting(AppSettings::ColoredHelp)
+        .setting(AppSettings::ColorAlways)
         .version(VERSION)
         .author(AUTHORS)
         .long_about(common::ABOUT)

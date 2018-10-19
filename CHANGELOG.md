@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.5.3]
+### Added
+- `.yaml` and `.yml` are both supported
+- If both versions exist, Dingus will patiently ask for that to be addressed
+
 ## [0.4.2]
 ### Changed
 - `config` parameter for `session` and `print` subcommands is now optional. Dingus will look for ".dingus" file recursively upwards
