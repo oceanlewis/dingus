@@ -23,12 +23,6 @@ pub enum Error {
     #[fail(display = "Couldn't find a YAML file to load")]
     DingusFileNotFound,
 
-    #[fail(display = "This file's filename isn't valid unicode and could not be read")]
-    FileNameUnreadable,
-
-    #[fail(display = "Unable to write to Standard Out")]
-    StdIOWriteError,
-
     #[fail(display = "The default config path of `$HOME/.config/dingus` doesn't exist")]
     ConfigPathNotFound,
 

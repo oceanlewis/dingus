@@ -3,11 +3,12 @@ pub extern crate clap;
 use std::{
     collections::HashMap,
     env,
-    ffi::OsStr,
+    ffi::{OsStr, OsString},
     fs::{self, File},
     path::PathBuf,
 };
 
+use ansi_term::{Color::Green, Style};
 use dingus::error::*;
 
 type VariableMap = HashMap<String, String>;
@@ -189,11 +190,8 @@ impl Dingus {
     fn get_environment(&self) -> Result<VariableMap, Error> {
         let file_to_parse: PathBuf = match self.given_config_file {
             Some(ref path) => path.clone(),
-            None => {
-                let current_dir = env::current_dir()?;
-                Dingus::recursively_walk_upwards_for_dingus_file(current_dir)
-                    .ok_or(Error::DingusFileNotFound)?
-            }
+            None => Dingus::recursively_walk_upwards_for_dingus_file(env::current_dir()?)
+                .ok_or(Error::DingusFileNotFound)?,
         };
 
         let mut environment = Dingus::parse_dingus_file(&file_to_parse)?;
@@ -239,21 +237,61 @@ impl Dingus {
     }
 
     fn list(self) -> Result<(), Error> {
-        use std::io::{self, Write};
-        let mut stdout = io::stdout();
+        let dingus_file = Dingus::recursively_walk_upwards_for_dingus_file(env::current_dir()?);
 
-        for entry in self.config_dir_path.read_dir()? {
-            let path = entry?.path();
+        let mut found_configs = Vec::new();
 
-            if let Some(extension) = path.extension() {
-                if extension == "yaml" {
-                    let file_name = path.file_name().ok_or(Error::FileNameUnreadable)?;
-                    writeln!(&mut stdout, "{}", file_name.to_string_lossy())
-                        .or(Err(Error::StdIOWriteError))?;
+        self.config_dir_path.read_dir()?.for_each(|entry| {
+            if let Ok(entry) = entry {
+                let path = entry.path();
+
+                if let Some(extension) = path.extension().and_then(OsStr::to_str) {
+                    match extension {
+                        "yaml" | "yml" => {
+                            if let Some(file_name) = path.file_name().map(OsStr::to_owned) {
+                                found_configs.push(file_name);
+                            }
+                        }
+                        _ => {}
+                    }
                 }
+            }
+        });
+
+        let mut output = Vec::new();
+
+        match dingus_file {
+            Some(path) => output.push(format!(
+                "{} {}\n",
+                Green.paint("Found in path:"),
+                path.to_string_lossy()
+            )),
+            None => {}
+        }
+
+        let mut found_configs: Vec<String> = found_configs
+            .into_iter()
+            .map(OsString::into_string)
+            .filter_map(Result::ok)
+            .collect();
+
+        match found_configs.is_empty() {
+            true => output.push(format!(
+                "{}",
+                Style::new()
+                    .bold()
+                    .paint("No valid config files found in config folder.")
+            )),
+            false => {
+                found_configs.sort();
+                output.push(format!("{}", Green.paint("Available config files:")));
+
+                found_configs
+                    .iter()
+                    .for_each(|path| output.push(format!("- {}", path)));
             }
         }
 
-        Ok(())
+        Ok(println!("{}", output.join("\n")))
     }
 }

@@ -1,5 +1,7 @@
-#[macro_use] extern crate failure;
+#[macro_use]
+extern crate failure;
 extern crate clap;
+extern crate ansi_term;
 
 pub use clap::{App, AppSettings, Arg, SubCommand};
 
@@ -20,8 +22,7 @@ fn main() {
                 .help(common::CONFIG_ARG_TEXT)
                 .required(false)
                 .takes_value(true),
-        )
-        .arg(
+        ).arg(
             Arg::with_name("shell")
                 .short("s")
                 .long("shell")
@@ -40,16 +41,14 @@ fn main() {
                 .help(common::CONFIG_ARG_TEXT)
                 .required(false)
                 .takes_value(true),
-        )
-        .arg(
+        ).arg(
             Arg::with_name("shell")
                 .short("s")
                 .long("shell")
                 .value_name("SHELL")
                 .help(session::SHELL_ARG_TEXT)
                 .takes_value(true),
-        )
-        .alias("shell");
+        ).alias("shell");
 
     let list = SubCommand::with_name("list").about(list::ABOUT).alias("ls");
 
