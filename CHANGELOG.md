@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.5.5]
+- Color error output
+
 ## [0.5.4]
 ### Changed
 - Update `list` subcommand to show first .dingus file in path

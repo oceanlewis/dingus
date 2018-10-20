@@ -69,7 +69,7 @@ dependencies = [
 
 [[package]]
 name = "dingus"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "ansi_term 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",

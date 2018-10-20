@@ -159,18 +159,18 @@ impl Dingus {
     }
 
     fn set_dingus_level(variable_list: &mut VariableMap) {
-        let env_name = "DINGUS_LEVEL";
-        let default_level = 1;
+        const ENV_VAR: &str = "DINGUS_LEVEL";
+        const DEFAULT_LEVEL: u32 = 1;
 
-        let level = match env::var(&env_name) {
+        let level = match env::var(&ENV_VAR) {
             Ok(var) => match var.parse::<u32>() {
                 Ok(current_level) => current_level,
-                Err(_) => default_level,
+                Err(_) => DEFAULT_LEVEL,
             },
-            Err(_) => default_level,
+            Err(_) => DEFAULT_LEVEL,
         };
 
-        variable_list.insert(env_name.to_owned(), level.to_string());
+        variable_list.insert(ENV_VAR.to_owned(), level.to_string());
     }
 
     fn recursively_walk_upwards_for_dingus_file(here: PathBuf) -> Option<PathBuf> {
@@ -207,8 +207,10 @@ impl Dingus {
             .status()
             .map_err(Error::BadShellVar)?;
 
-        println!("Exiting Dingus Session");
-        Ok(())
+        Ok(println!(
+            "{}",
+            Style::new().bold().paint("Exiting Dingus Session\n")
+        ))
     }
 
     fn print(self) -> Result<(), Error> {

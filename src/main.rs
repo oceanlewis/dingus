@@ -1,8 +1,9 @@
 #[macro_use]
 extern crate failure;
-extern crate clap;
 extern crate ansi_term;
+extern crate clap;
 
+use ansi_term::Style;
 pub use clap::{App, AppSettings, Arg, SubCommand};
 
 mod dingus;
@@ -65,7 +66,7 @@ fn main() {
         .subcommand(list);
 
     match Dingus::from_clap(app).and_then(|app| app.run()) {
-        Err(e) => eprintln!("ERROR: {}", e),
+        Err(e) => eprintln!("{} {}", Style::new().bold().paint("Error:"), e),
         _ => {}
     };
 }
