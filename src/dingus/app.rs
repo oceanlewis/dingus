@@ -164,7 +164,7 @@ impl Dingus {
 
         let level = match env::var(&ENV_VAR) {
             Ok(var) => match var.parse::<u32>() {
-                Ok(current_level) => current_level,
+                Ok(current_level) => current_level + DEFAULT_LEVEL,
                 Err(_) => DEFAULT_LEVEL,
             },
             Err(_) => DEFAULT_LEVEL,

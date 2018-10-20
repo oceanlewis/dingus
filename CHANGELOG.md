@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [0.5.5]
+## Fixed
+- DINGUS_LEVEL is now set properly
+## Changed
 - Color error output
 
 ## [0.5.4]
