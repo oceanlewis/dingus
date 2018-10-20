@@ -220,12 +220,12 @@ impl Dingus {
         let mut set_commands: Vec<String> = Vec::with_capacity(environment.len());
 
         for (key, value) in environment {
-            match self.shell.command() {
-                "fish" => set_commands.push(
+            match self.shell {
+                Shell::Fish(_) => set_commands.push(
                     format_args!("set -gx {key} \"{value}\"; ", key = key, value = value)
                         .to_string(),
                 ),
-                _ => set_commands.push(
+                Shell::BashLike(_) => set_commands.push(
                     format_args!("export {key}=\"{value}\"; ", key = key, value = value,)
                         .to_string(),
                 ),
@@ -239,58 +239,62 @@ impl Dingus {
     }
 
     fn list(self) -> Result<(), Error> {
-        let dingus_file = Dingus::recursively_walk_upwards_for_dingus_file(env::current_dir()?);
-
-        let mut found_configs = Vec::new();
-
-        self.config_dir_path.read_dir()?.for_each(|entry| {
-            if let Ok(entry) = entry {
-                let path = entry.path();
-
-                if let Some(extension) = path.extension().and_then(OsStr::to_str) {
-                    match extension {
-                        "yaml" | "yml" => {
-                            if let Some(file_name) = path.file_name().map(OsStr::to_owned) {
-                                found_configs.push(file_name);
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-            }
-        });
-
         let mut output = Vec::new();
 
-        match dingus_file {
-            Some(path) => output.push(format!(
-                "{} {}\n",
-                Green.paint("Found in path:"),
-                path.to_string_lossy()
-            )),
-            None => {}
+        {
+            let dingus_file = Dingus::recursively_walk_upwards_for_dingus_file(env::current_dir()?);
+
+            match dingus_file {
+                Some(path) => output.push(format!(
+                    "{} {}\n",
+                    Green.paint("Found in path:"),
+                    path.to_string_lossy()
+                )),
+                None => {}
+            }
         }
 
-        let mut found_configs: Vec<String> = found_configs
-            .into_iter()
-            .map(OsString::into_string)
-            .filter_map(Result::ok)
-            .collect();
+        {
+            let mut found_configs = Vec::new();
 
-        match found_configs.is_empty() {
-            true => output.push(format!(
-                "{}",
-                Style::new()
-                    .bold()
-                    .paint("No valid config files found in config folder.")
-            )),
-            false => {
-                found_configs.sort();
-                output.push(format!("{}", Green.paint("Available config files:")));
+            self.config_dir_path.read_dir()?.for_each(|entry| {
+                if let Ok(entry) = entry {
+                    let path = entry.path();
 
-                found_configs
-                    .iter()
-                    .for_each(|path| output.push(format!("- {}", path)));
+                    if let Some(extension) = path.extension().and_then(OsStr::to_str) {
+                        match extension {
+                            "yaml" | "yml" => {
+                                if let Some(file_name) = path.file_name().map(OsStr::to_owned) {
+                                    found_configs.push(file_name);
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+            });
+
+            let mut found_configs: Vec<String> = found_configs
+                .into_iter()
+                .map(OsString::into_string)
+                .filter_map(Result::ok)
+                .collect();
+
+            match found_configs.is_empty() {
+                true => output.push(format!(
+                    "{}",
+                    Style::new()
+                        .bold()
+                        .paint("No valid config files found in config folder.")
+                )),
+                false => {
+                    found_configs.sort();
+                    output.push(format!("{}", Green.paint("Available config files:")));
+
+                    found_configs
+                        .iter()
+                        .for_each(|path| output.push(format!("- {}", path)));
+                }
             }
         }
 
