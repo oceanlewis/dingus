@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.5.6]
+## Fixed
+- All help text should be colored now
+
 ## [0.5.5]
 ## Fixed
 - DINGUS_LEVEL is now set properly

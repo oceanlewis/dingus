@@ -15,6 +15,8 @@ use dingus::{
 fn main() {
     let config = SubCommand::with_name("print")
         .about(print::ABOUT)
+        .setting(AppSettings::ColoredHelp)
+        .setting(AppSettings::ColorAlways)
         .arg(
             Arg::with_name("config")
                 .short("c")
@@ -34,6 +36,8 @@ fn main() {
 
     let session = SubCommand::with_name("session")
         .about(session::ABOUT)
+        .setting(AppSettings::ColoredHelp)
+        .setting(AppSettings::ColorAlways)
         .arg(
             Arg::with_name("config")
                 .short("c")
@@ -51,7 +55,11 @@ fn main() {
                 .takes_value(true),
         ).alias("shell");
 
-    let list = SubCommand::with_name("list").about(list::ABOUT).alias("ls");
+    let list = SubCommand::with_name("list")
+        .about(list::ABOUT)
+        .setting(AppSettings::ColoredHelp)
+        .setting(AppSettings::ColorAlways)
+        .alias("ls");
 
     let app = App::new(NAME)
         .setting(AppSettings::ArgRequiredElseHelp)
