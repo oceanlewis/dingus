@@ -251,8 +251,8 @@ impl Dingus {
             ));
         }
 
-        {
-            let mut found_configs = Vec::new();
+        let mut found_configs = {
+            let mut configs = Vec::new();
 
             self.config_dir_path.read_dir()?.for_each(|entry| {
                 if let Ok(entry) = entry {
@@ -262,7 +262,7 @@ impl Dingus {
                         match extension {
                             "yaml" | "yml" => {
                                 if let Some(file_name) = path.file_name().map(OsStr::to_owned) {
-                                    found_configs.push(file_name);
+                                    configs.push(file_name);
                                 }
                             }
                             _ => {}
@@ -271,27 +271,27 @@ impl Dingus {
                 }
             });
 
-            let mut found_configs: Vec<String> = found_configs
-                .into_iter()
-                .map(OsString::into_string)
-                .filter_map(Result::ok)
-                .collect();
+            configs
+        }
+        .into_iter()
+        .map(OsString::into_string)
+        .filter_map(Result::ok)
+        .collect::<Vec<String>>();
 
-            if found_configs.is_empty() {
-                output.push(format!(
-                    "{}",
-                    Style::new()
-                        .bold()
-                        .paint("No valid config files found in config folder.")
-                ))
-            } else {
-                found_configs.sort();
-                output.push(format!("{}", Green.paint("Available config files:")));
+        if found_configs.is_empty() {
+            output.push(format!(
+                "{}",
+                Style::new()
+                    .bold()
+                    .paint("No valid config files found in config folder.")
+            ))
+        } else {
+            found_configs.sort();
+            output.push(format!("{}", Green.paint("Available config files:")));
 
-                found_configs
-                    .iter()
-                    .for_each(|path| output.push(format!("- {}", path)));
-            }
+            found_configs
+                .iter()
+                .for_each(|path| output.push(format!("- {}", path)));
         }
 
         Ok(println!("{}", output.join("\n")))
