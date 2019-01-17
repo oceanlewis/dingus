@@ -1,7 +1,7 @@
 use std::{env, io, path::PathBuf};
+use failure::Fail;
 
-pub extern crate serde_yaml;
-use self::serde_yaml::Error as YamlError;
+use serde_yaml::Error as YamlError;
 
 #[derive(Debug, Fail)]
 pub enum Error {

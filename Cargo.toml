@@ -6,7 +6,7 @@ description = "Easily apply environment variables loaded from a config file to a
 license     = "MIT"
 homepage    = "https://github.com/davidarmstronglewis/dingus"
 readme      = "README.md"
-# edition     = "2018"
+edition     = "2018"
 
 [dependencies]
 serde        = "1.0.84"

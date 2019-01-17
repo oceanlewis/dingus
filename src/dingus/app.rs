@@ -1,5 +1,3 @@
-pub extern crate clap;
-
 use std::{
     collections::HashMap,
     env,
@@ -8,8 +6,8 @@ use std::{
     path::PathBuf,
 };
 
+use crate::dingus::error::Error;
 use ansi_term::{Color::Green, Style};
-use crate::dingus::error::*;
 
 type VariableMap = HashMap<String, String>;
 
@@ -245,17 +243,12 @@ impl Dingus {
     fn list(self) -> Result<(), Error> {
         let mut output = Vec::new();
 
-        {
-            let dingus_file = Dingus::recursively_walk_upwards_for_dingus_file(env::current_dir()?);
-
-            match dingus_file {
-                Some(path) => output.push(format!(
-                    "{} {}\n",
-                    Green.paint("Found in path:"),
-                    path.to_string_lossy()
-                )),
-                None => {}
-            }
+        if let Some(path) = Dingus::recursively_walk_upwards_for_dingus_file(env::current_dir()?) {
+            output.push(format!(
+                "{} {}\n",
+                Green.paint("Found in path:"),
+                path.to_string_lossy()
+            ));
         }
 
         {
@@ -284,21 +277,20 @@ impl Dingus {
                 .filter_map(Result::ok)
                 .collect();
 
-            match found_configs.is_empty() {
-                true => output.push(format!(
+            if found_configs.is_empty() {
+                output.push(format!(
                     "{}",
                     Style::new()
                         .bold()
                         .paint("No valid config files found in config folder.")
-                )),
-                false => {
-                    found_configs.sort();
-                    output.push(format!("{}", Green.paint("Available config files:")));
+                ))
+            } else {
+                found_configs.sort();
+                output.push(format!("{}", Green.paint("Available config files:")));
 
-                    found_configs
-                        .iter()
-                        .for_each(|path| output.push(format!("- {}", path)));
-                }
+                found_configs
+                    .iter()
+                    .for_each(|path| output.push(format!("- {}", path)));
             }
         }
 
