@@ -8,12 +8,12 @@ homepage    = "https://github.com/davidarmstronglewis/dingus"
 readme      = "README.md"
 
 [dependencies]
-serde        = "^1.0.80"
-serde_derive = "^1.0.80"
-serde_yaml   = "^0.8.6"
-failure      = "^0.1.2"
-ansi_term    = "^0.11.0"
+serde        = "1.0.84"
+serde_derive = "1.0.84"
+serde_yaml   = "0.8.8"
+failure      = "0.1.5"
+ansi_term    = "0.11.0"
 
 [dependencies.clap]
-version  = "^2.32.0"
+version  = "2.32.0"
 features = ["suggestions", "color", "wrap_help"]

@@ -67,7 +67,11 @@ impl Application<Dingus, Error> for Dingus {
 
         let shell = {
             let shell_bin = {
-                let shell_var = env::var("SHELL")?;
+                let shell_var: String = subcommand_matches
+                    .value_of("shell")
+                    .map(str::to_string)
+                    .unwrap_or(env::var("SHELL")?);
+
                 shell_var
                     .split('/')
                     .last()
