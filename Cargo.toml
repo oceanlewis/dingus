@@ -14,7 +14,6 @@ serde_derive = "1.0.84"
 serde_yaml   = "0.8.8"
 failure      = "0.1.5"
 ansi_term    = "0.11.0"
-# structopt    = "*"
 
 [dependencies.clap]
 version  = "2.32.0"
