@@ -9,7 +9,7 @@ use std::{
 };
 
 use ansi_term::{Color::Green, Style};
-use dingus::error::*;
+use crate::dingus::error::*;
 
 type VariableMap = HashMap<String, String>;
 

@@ -7,7 +7,7 @@ use ansi_term::Style;
 pub use clap::{App, AppSettings, Arg, SubCommand};
 
 mod dingus;
-use dingus::{
+use crate::dingus::{
     app::{Application, Dingus},
     constants::{common, list, print, session, AUTHORS, NAME, VERSION},
 };
