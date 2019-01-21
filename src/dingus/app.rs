@@ -204,6 +204,21 @@ impl Dingus {
     fn session(self) -> Result<(), Error> {
         use std::process::Command;
 
+        if let Shell::Fish(_) = self.shell {
+            use nix::sys::signal;
+            extern "C" fn unabashedly_disregard_signal(_: i32) {}
+
+            let sig_action = signal::SigAction::new(
+                signal::SigHandler::Handler(unabashedly_disregard_signal),
+                signal::SaFlags::empty(),
+                signal::SigSet::empty(),
+            );
+
+            unsafe {
+                let _ = signal::sigaction(signal::SIGINT, &sig_action);
+            }
+        }
+
         Command::new(self.shell.command())
             .envs(self.get_environment()?)
             .status()
