@@ -7,7 +7,11 @@ Dingus is a simple tool by and for the folks at Assemble to ease management of e
 Dingus is written in the Rust and is available on [crates.io](https://crates.io) to build from source. It is also available as a Homebrew Tap.
 
 ##### Homebrew Installation
-`brew tap davidarmstronglewis/dingus; brew install dingus`
+
+```sh
+brew tap davidarmstronglewis/dingus
+brew install dingus
+```
 
 ### Using Dingus
 
