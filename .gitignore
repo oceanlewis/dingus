@@ -7,3 +7,6 @@
 
 # OS Specific
 .DS_Store
+
+# Intellij
+.idea
