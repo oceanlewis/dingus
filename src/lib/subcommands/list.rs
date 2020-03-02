@@ -16,23 +16,23 @@ pub fn list(
     let config_files_in_config_directory: Vec<PathBuf> =
         ConfigDirectory::using(config_dir_path).search()?;
 
-    println!(
-        "{}",
-        vec![
-            format_config_files(
-                "Found upwards in current directory",
-                config_files_in_path,
-                false,
-            ),
-            format_config_files(
-                "Found in config directory",
-                config_files_in_config_directory,
-                true,
-            ),
-        ]
-        .join("\n\n")
-    );
+    let mut output = Vec::new();
+    if config_files_in_path.len() > 0 {
+        output.push(format_config_files(
+            "Found upwards in current directory",
+            config_files_in_path,
+            false,
+        ));
+    }
+    if config_files_in_config_directory.len() > 0 {
+        output.push(format_config_files(
+            "Found in config directory",
+            config_files_in_config_directory,
+            true,
+        ));
+    }
 
+    println!("{}", output.join("\n\n"));
     Ok(())
 }
 

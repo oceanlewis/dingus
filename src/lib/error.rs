@@ -43,10 +43,8 @@ pub enum Error {
     )]
     ConflictingConfigPaths { one: PathBuf, two: PathBuf },
 
-    #[fail(
-      display = "No config files provided to load"
-    )]
-    EmptyConfigList
+    #[fail(display = "No config files provided to load")]
+    EmptyConfigList,
 }
 
 impl From<env::VarError> for Error {

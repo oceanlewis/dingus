@@ -53,7 +53,10 @@ impl ConfigDirectory {
             .collect::<Vec<PathBuf>>())
     }
 
-    pub fn load(&self, these: Vec<PathBuf>) -> Result<Environment, Error> {
+    pub fn load_environment(
+        &self,
+        these: Vec<PathBuf>,
+    ) -> Result<Environment, Error> {
         if these.len() == 0 {
             return Err(Error::EmptyConfigList);
         }

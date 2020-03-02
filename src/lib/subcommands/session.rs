@@ -11,12 +11,10 @@ pub fn session(
     current_directory: PathBuf,
     config_dir_path: PathBuf,
     given_shell_command: Option<String>,
-    config_files: Vec<PathBuf>,
+    given_config_files: Vec<PathBuf>,
 ) -> Result<(), Error> {
-    let shell_command = {
-        let current_shell = Shell::current_shell()?;
-        given_shell_command.unwrap_or(current_shell.shell_command().to_owned())
-    };
+    let shell_command = given_shell_command
+        .unwrap_or(Shell::current_shell()?.shell_command().to_owned());
 
     if shell_command.ends_with("fish") {
         unsafe {
@@ -24,10 +22,9 @@ pub fn session(
         }
     }
 
-    let mut new_environment = if config_files.len() > 0 {
-        // ConfigDirectory::using(config_dir_path)
-        //   .load_either(config_files, current_directory)?;
-        ConfigDirectory::using(config_dir_path).load(config_files)?
+    let mut new_environment = if given_config_files.len() > 0 {
+        ConfigDirectory::using(config_dir_path)
+            .load_environment(given_config_files)?
     } else {
         ConfigFile::find(&current_directory)
             .unwrap_or(Err(Error::DingusFileNotFound))?
