@@ -1,6 +1,6 @@
 [package]
 name                = "dingus"
-version             = "0.5.8"
+version             = "0.6.0"
 authors             = ["David Lewis <david@armstronglewis.com>"]
 description         = "Easily apply environment variables loaded from a config file to a shell session."
 license             = "MIT"
