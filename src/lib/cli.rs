@@ -11,8 +11,6 @@ const CONFIG_ARG_TEXT: &str = "The YAML files to be read from that contains the 
 const COMMAND_ARG_TEXT: &str =
     "The supplied command and its arguments to be run";
 
-const DISOWN_ARG_TEXT: &str = "Whether the spawned process should be disowned";
-
 const SESSION_ABOUT: &str =
     "Open a new shell with environment variables applied";
 
@@ -63,13 +61,6 @@ pub enum Cli {
     )]
     Run {
         #[structopt(
-          help = DISOWN_ARG_TEXT,
-          long = "disown",
-          short = "d",
-        )]
-        disown: bool,
-
-        #[structopt(
           help = CONFIG_ARG_TEXT,
           long = "configs",
           short = "c",
@@ -96,16 +87,11 @@ impl Cli {
                 shell.to_owned(),
                 configs.to_owned(),
             ),
-            Cli::Run {
-                command,
-                configs,
-                disown,
-            } => subcommands::run(
+            Cli::Run { command, configs } => subcommands::run(
                 current_dir()?,
                 ConfigDirectory::default_directory()?,
                 configs.to_owned(),
                 command.to_owned(),
-                *disown,
             ),
         }
     }

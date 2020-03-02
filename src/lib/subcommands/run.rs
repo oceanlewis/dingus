@@ -9,13 +9,12 @@ pub fn run(
     config_dir_path: PathBuf,
     given_config_files: Vec<PathBuf>,
     command_and_args: Vec<String>,
-    should_disown: bool,
 ) -> Result<(), Error> {
     let (command, args) = match command_and_args.len() {
-        0 => unimplemented!(),
-        1 => command_and_args.split_at(1),
-        _ => unimplemented!(),
+        0 => return Err(Error::NoCommandSupplied),
+        _ => command_and_args.split_at(1),
     };
+    let command: String = command[0].to_owned();
 
     let mut new_environment = if given_config_files.len() > 0 {
         ConfigDirectory::using(config_dir_path)
@@ -25,17 +24,14 @@ pub fn run(
             .unwrap_or(Err(Error::DingusFileNotFound))?
             .environment
     };
-
     new_environment.increment_level();
 
-    match should_disown {
-        true => unimplemented!(),
-        false => Command::new(command[0].to_owned())
-            .args(args)
-            .envs(new_environment.variables)
-            .status()
-            .map_err(Error::BadShellVar)?, //Command::new(command.first()).args(args).status(),
-    };
-
-    Ok(())
+    let exit_status = Command::new(command)
+        .args(args)
+        .envs(new_environment.variables)
+        .status()
+        .map_err(Error::BadShellVar)?
+        .code()
+        .unwrap_or_default();
+    std::process::exit(exit_status);
 }

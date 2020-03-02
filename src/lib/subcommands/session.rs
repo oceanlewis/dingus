@@ -5,7 +5,7 @@ use crate::lib::{
 
 use ansi_term::Style;
 
-use std::{env, path::PathBuf, process::Command};
+use std::{path::PathBuf, process::Command};
 
 pub fn session(
     current_directory: PathBuf,

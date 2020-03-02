@@ -21,14 +21,8 @@ pub enum Error {
     #[fail(display = "The <SHELL> argument provided to --shell is invalid")]
     BadShellVar(io::Error),
 
-    #[fail(display = "Invalid [SUBCOMMAND] specified")]
-    NoSubcommandMatch,
-
     #[fail(display = "Couldn't find a YAML file to load")]
     DingusFileNotFound,
-
-    #[fail(display = "")]
-    InvalidDingusLevel(String),
 
     #[fail(
         display = "The default config path of `~/.config/dingus` doesn't exist"
@@ -45,6 +39,9 @@ pub enum Error {
 
     #[fail(display = "No config files provided to load")]
     EmptyConfigList,
+
+    #[fail(display = "No command was supplied to `run` command")]
+    NoCommandSupplied,
 }
 
 impl From<env::VarError> for Error {
