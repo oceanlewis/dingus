@@ -33,7 +33,7 @@ impl ConfigDirectory {
     }
 
     pub fn search(&self) -> Result<Vec<PathBuf>, Error> {
-        Ok(self
+        let mut dirs = self
             .path
             .read_dir()?
             .flat_map(|read_dir: io::Result<DirEntry>| {
@@ -50,7 +50,11 @@ impl ConfigDirectory {
                 })
             })
             .flatten()
-            .collect::<Vec<PathBuf>>())
+            .collect::<Vec<PathBuf>>();
+
+        dirs.sort();
+
+        Ok(dirs)
     }
 
     pub fn load_environment(
