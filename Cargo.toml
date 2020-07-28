@@ -9,15 +9,15 @@ readme              = "README.md"
 edition             = "2018"
 
 [dependencies]
-serde               = "1.0.104"
-serde_derive        = "1.0.104"
-serde_yaml          = "0.8.11"
-thiserror           = "1.0.11"
+serde               = "1.0.114"
+serde_derive        = "1.0.114"
+serde_yaml          = "0.8.13"
+thiserror           = "1.0.20"
 ansi_term           = "0.12.1"
-nix                 = "0.17.0"
-structopt           = "0.3.11"
-dirs                = "2.0.2"
+nix                 = "0.18.0"
+structopt           = "0.3.15"
+dirs                = "3.0.1"
 
 [dependencies.clap]
-version             = "2.33.0"
+version             = "2.33.1"
 features            = ["suggestions", "color", "wrap_help"]
