@@ -1,0 +1,38 @@
+{
+    "niv": {
+        "branch": "master",
+        "description": "Easy dependency management for Nix projects",
+        "homepage": "https://github.com/nmattia/niv",
+        "owner": "nmattia",
+        "repo": "niv",
+        "rev": "20c899271f288d33114760bc298838575fc6c7f9",
+        "sha256": "07zswk6dhlydihl9g6skmy52grjvqpra8r98f2dmbgwzc1yhjhxq",
+        "type": "tarball",
+        "url": "https://github.com/nmattia/niv/archive/20c899271f288d33114760bc298838575fc6c7f9.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixpkgs": {
+        "branch": "nixpkgs-unstable",
+        "description": "Nix Packages collection",
+        "homepage": "",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "0da76dab4c2acce5ebf404c400d38ad95c52b152",
+        "sha256": "1lj3h4hg3cnxl3avbg9089wd8c82i6sxhdyxfy99l950i78j0gfg",
+        "type": "tarball",
+        "url": "https://github.com/NixOS/nixpkgs/archive/0da76dab4c2acce5ebf404c400d38ad95c52b152.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixpkgs-mozilla": {
+        "branch": "master",
+        "description": "mozilla related nixpkgs (extends nixos/nixpkgs repo)",
+        "homepage": null,
+        "owner": "mozilla",
+        "repo": "nixpkgs-mozilla",
+        "rev": "8c007b60731c07dd7a052cce508de3bb1ae849b4",
+        "sha256": "1zybp62zz0h077zm2zmqs2wcg3whg6jqaah9hcl1gv4x8af4zhs6",
+        "type": "tarball",
+        "url": "https://github.com/mozilla/nixpkgs-mozilla/archive/8c007b60731c07dd7a052cce508de3bb1ae849b4.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}
