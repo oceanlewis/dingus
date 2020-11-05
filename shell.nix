@@ -1,13 +1,16 @@
 let
   sources = import ./nix/sources.nix;
   nixpkgs = import sources.nixpkgs {};
-
-  rustPkgs = with (import ./nix/rust.nix { inherit sources; }); [
-    rust cargo
-  ];
+  rs = import ./nix/rust.nix { inherit sources; };
 
 in with nixpkgs;
 
 mkShell {
-  buildInputs = rustPkgs;
+  RUST_SRC_PATH = "${rs.rust-src.outPath}/lib/rustlib/src/rust/library";
+
+  buildInputs = with rs; [
+    cargo
+    rust
+    rust-src
+  ];
 }

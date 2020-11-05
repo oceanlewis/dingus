@@ -2,7 +2,7 @@ use crate::lib::{
     config_directory::ConfigDirectory, error::Error, subcommands,
 };
 use std::{env::current_dir, path::PathBuf};
-use structopt::{clap::AppSettings, StructOpt};
+use structopt::StructOpt;
 
 const ABOUT: &str = "Manage your computing environments variables with ease! Inspired by Juan Karam's original Ruby implementation!";
 
@@ -25,12 +25,10 @@ const LIST_ABOUT: &str = "List possible environments available";
 #[derive(Debug, StructOpt)]
 #[structopt(
     about = ABOUT,
-    setting = AppSettings::ColoredHelp,
 )]
 pub enum Cli {
     #[structopt(
       about = SESSION_ABOUT,
-      setting = AppSettings::ColoredHelp,
       alias = "shell",
       alias = "s",
     )]
@@ -49,14 +47,12 @@ pub enum Cli {
 
     #[structopt(
       about = LIST_ABOUT,
-      setting = AppSettings::ColoredHelp,
       alias = "ls",
     )]
     List {},
 
     #[structopt(
       about = RUN_ABOUT,
-      setting = AppSettings::ColoredHelp,
       alias = "r",
     )]
     Run {

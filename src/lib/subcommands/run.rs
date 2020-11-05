@@ -16,7 +16,7 @@ pub fn run(
     };
     let command: String = command[0].to_owned();
 
-    let mut new_environment = if given_config_files.len() > 0 {
+    let mut new_environment = if !given_config_files.is_empty() {
         ConfigDirectory::using(config_dir_path)
             .load_environment(given_config_files)?
     } else {

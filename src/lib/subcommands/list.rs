@@ -17,14 +17,14 @@ pub fn list(
         ConfigDirectory::using(config_dir_path).search()?;
 
     let mut output = Vec::new();
-    if config_files_in_path.len() > 0 {
+    if !config_files_in_path.is_empty() {
         output.push(format_config_files(
             "Found upwards in current directory",
             config_files_in_path,
             false,
         ));
     }
-    if config_files_in_config_directory.len() > 0 {
+    if !config_files_in_config_directory.is_empty() {
         output.push(format_config_files(
             "Found in config directory",
             config_files_in_config_directory,

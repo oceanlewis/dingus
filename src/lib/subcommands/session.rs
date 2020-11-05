@@ -22,7 +22,7 @@ pub fn session(
         }
     }
 
-    let mut new_environment = if given_config_files.len() > 0 {
+    let mut new_environment = if !given_config_files.is_empty() {
         ConfigDirectory::using(config_dir_path)
             .load_environment(given_config_files)?
     } else {

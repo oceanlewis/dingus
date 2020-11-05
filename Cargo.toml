@@ -1,6 +1,6 @@
 [package]
 name                = "dingus"
-version             = "0.6.0"
+version             = "1.0.0"
 authors             = ["David Lewis <david@armstronglewis.com>"]
 description         = "Easily apply environment variables loaded from a config file to a shell session."
 license             = "MIT"
@@ -9,15 +9,15 @@ readme              = "README.md"
 edition             = "2018"
 
 [dependencies]
-serde               = "1.0.114"
-serde_derive        = "1.0.114"
-serde_yaml          = "0.8.13"
-thiserror           = "1.0.20"
+serde               = "1.0.117"
+serde_derive        = "1.0.117"
+serde_yaml          = "0.8.14"
+thiserror           = "1.0.22"
 ansi_term           = "0.12.1"
-nix                 = "0.18.0"
-structopt           = "0.3.15"
+nix                 = "0.19.0"
+structopt           = "0.3.20"
 dirs                = "3.0.1"
 
 [dependencies.clap]
-version             = "2.33.1"
+version             = "2.33.3"
 features            = ["suggestions", "color", "wrap_help"]
