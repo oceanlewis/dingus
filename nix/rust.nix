@@ -1,4 +1,4 @@
-{ sources ? import ./sources.nix}:
+{ sources ? import ./sources.nix }:
 
 let
   nixpkgs = import sources.nixpkgs {
