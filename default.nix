@@ -1,8 +1,7 @@
 let
   sources = import ./nix/sources.nix;
-  rust = import ./nix/rust.nix { inherit sources; };
-  nixpkgs = import sources.nixpkgs {};
-  lib = nixpkgs.lib;
+  pkgs = import sources.nixpkgs { };
+  inherit (pkgs) stdenv lib;
 
   cleanSourceFilter = name: type:
     baseNameOf (toString name) != "target";
@@ -12,20 +11,20 @@ let
       filter = cleanSourceFilter; inherit src;
     };
 
-in with nixpkgs;
+in
 
-rustPlatform.buildRustPackage rec {
+pkgs.rustPlatform.buildRustPackage rec {
   name = "dingus";
   src = filteredSource ./.;
-  buildInputs = [];
+  buildInputs = [ ];
 
   checkPhase = "";
-  cargoSha256 = "sha256:0rk3v2vv6l1kmn7agqlvax15qyp5zrrg2grs3j0yrzgpy5jfj9c9";
+  cargoSha256 = "sha256-+SGokTxfsQ0mipKkIzl6merurI0MnRzPisxAdaKSJAw=";
 
-  meta = with stdenv.lib; {
+  meta = {
     description = "Easily apply environment variables loaded from a config file to a shell session.";
-    homepage = https://github.com/nuxeh/url-bot-rs;
-    license = licenses.mit;
-    platforms = platforms.all;
+    homepage = https://github.com/davidarmstronglewis/dingus;
+    license = lib.licenses.mit;
+    platforms = lib.platforms.all;
   };
 }
